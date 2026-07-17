@@ -1,10 +1,8 @@
 @echo off
-chcp 1251 > nul
-
-:: Проверка прав администратора
+:: Check for Administrator privileges
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [i] Запрос прав Администратора...
+    echo [i] Requesting Administrator privileges...
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
     echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
     "%temp%\getadmin.vbs"
@@ -15,14 +13,14 @@ if %errorlevel% neq 0 (
 :menu
 cls
 echo ======================================================
-echo   УПРАВЛЕНИЕ БЕЗОПАСНОСТЬЮ И БЛОКИРОВКАМИ WINDOWS
+echo   WINDOWS SECURITY & BLOCK MANAGEMENT TOOL
 echo ======================================================
 echo.
-echo  [1] ОТКЛЮЧИТЬ блокировки и добавить в исключения (Разрешить запуск)
-echo  [2] ВКЛЮЧИТЬ блокировки обратно (Вернуть в исходное состояние)
-echo  [3] Выход
+echo  [1] DISABLE SmartScreen, Smart App Control & add Defender exclusions
+echo  [2] ENABLE SmartScreen, Smart App Control & remove Defender exclusions
+echo  [3] Exit
 echo.
-set /p choice="Выберите вариант (1-3): "
+set /p choice="Select an option (1-3): "
 
 if "%choice%"=="1" goto disable_block
 if "%choice%"=="2" goto restore_block
@@ -32,18 +30,18 @@ goto menu
 :disable_block
 cls
 echo ======================================================
-echo   ОТКЛЮЧЕНИЕ БЛОКИРОВОК И ДОБАВЛЕНИЕ ИСКЛЮЧЕНИЙ
+echo   DISABLING SECURITY BLOCKS & ADDING EXCLUSIONS
 echo ======================================================
 echo.
-echo [1/3] Снятие сетевых блокировок с файлов (Unblock-File)...
+echo [1/3] Removing network block from files (Unblock-File)...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem -Path '%~dp0' -Recurse -ErrorAction SilentlyContinue | Unblock-File"
 
-echo [2/3] Отключение Smart App Control и SmartScreen...
+echo [2/3] Disabling Smart App Control and SmartScreen...
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_SZ /d "Off" /f >nul 2>&1
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 0 /f >nul 2>&1
 
-echo [3/3] Добавление папок в исключения Защитника Windows...
+echo [3/3] Adding folders to Windows Defender exclusions...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-MpPreference -ExclusionPath '%~dp0' -ErrorAction SilentlyContinue"
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-MpPreference -ExclusionPath '%~dp0FACEIT Demo Hub.exe' -ErrorAction SilentlyContinue"
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-MpPreference -ExclusionPath '$env:ProgramFiles\FACEIT Demo Hub' -ErrorAction SilentlyContinue"
@@ -52,8 +50,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-MpPreference -Exclus
 
 echo.
 echo ======================================================
-echo [Успех] Все блокировки успешно отключены!
-echo [i] Рекомендуется перезагрузить компьютер.
+echo [Success] All security blocks disabled successfully!
+echo [i] It is highly recommended to restart your computer.
 echo ======================================================
 echo.
 pause
@@ -62,15 +60,15 @@ goto menu
 :restore_block
 cls
 echo ======================================================
-echo   ВОССТАНОВЛЕНИЕ СТАНДАРТНОЙ БЕЗОПАСНОСТИ WINDOWS
+echo   RESTORING DEFAULT WINDOWS SECURITY SETTINGS
 echo ======================================================
 echo.
-echo [1/2] Включение Smart App Control и SmartScreen...
+echo [1/2] Enabling Smart App Control and SmartScreen...
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_SZ /d "RequireAdmin" /f >nul 2>&1
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 1 /f >nul 2>&1
 
-echo [2/2] Удаление папок из исключений Защитника Windows...
+echo [2/2] Removing folders from Windows Defender exclusions...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Remove-MpPreference -ExclusionPath '%~dp0' -ErrorAction SilentlyContinue"
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Remove-MpPreference -ExclusionPath '%~dp0FACEIT Demo Hub.exe' -ErrorAction SilentlyContinue"
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Remove-MpPreference -ExclusionPath '$env:ProgramFiles\FACEIT Demo Hub' -ErrorAction SilentlyContinue"
@@ -79,8 +77,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Remove-MpPreference -Exc
 
 echo.
 echo ======================================================
-echo [Успех] Стандартные настройки безопасности восстановлены!
-echo [i] Рекомендуется перезагрузить компьютер.
+echo [Success] Default security settings restored!
+echo [i] It is highly recommended to restart your computer.
 echo ======================================================
 echo.
 pause
