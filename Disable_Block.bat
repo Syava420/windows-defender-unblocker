@@ -13,11 +13,11 @@ if %errorlevel% neq 0 (
 :menu
 cls
 echo ======================================================
-echo   WINDOWS SECURITY & BLOCK MANAGEMENT TOOL
+echo   WINDOWS SECURITY AND BLOCK MANAGEMENT TOOL
 echo ======================================================
 echo.
-echo  [1] DISABLE SmartScreen, Smart App Control & add Defender exclusions
-echo  [2] ENABLE SmartScreen, Smart App Control & remove Defender exclusions
+echo  [1] DISABLE SmartScreen, Smart App Control and add Defender exclusions
+echo  [2] ENABLE SmartScreen, Smart App Control and remove Defender exclusions
 echo  [3] Exit
 echo.
 set /p choice="Select an option (1-3): "
@@ -30,7 +30,7 @@ goto menu
 :disable_block
 cls
 echo ======================================================
-echo   DISABLING SECURITY BLOCKS & ADDING EXCLUSIONS
+echo   DISABLING SECURITY BLOCKS AND ADDING EXCLUSIONS
 echo ======================================================
 echo.
 echo [1/3] Removing network block from files (Unblock-File)...
